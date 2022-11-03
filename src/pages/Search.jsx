@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Carregando from './Carregando';
+import Header from '../components/Header';
 
 class Search extends Component {
   componentDidMount() {
@@ -15,7 +16,7 @@ class Search extends Component {
 
     return (
       <div data-testid="page-search">
-        Search
+        <Header />
       </div>
     );
   }
