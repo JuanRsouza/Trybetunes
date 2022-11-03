@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Carregando from './Carregando';
 
 class Search extends Component {
@@ -19,5 +20,9 @@ class Search extends Component {
     );
   }
 }
+Search.propTypes = {
+  carregando: PropTypes.bool.isRequired,
+  handleCarregando: PropTypes.func.isRequired,
+};
 
 export default Search;
