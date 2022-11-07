@@ -22,25 +22,34 @@ class Album extends Component {
   }
 
   fetchAPI = async () => {
-    const { match: { params } } = this.props;
-    const { id } = params;
+    // primeira parte
+
+    const { match: { params: { id } } } = this.props;
     const result = await getMusics(id);
     this.setState({ resuultAPI: result, isLoading: false });
+
+    // segunda parte
     const returnLocalStorage = await getFavoriteSongs();
-    console.log(returnLocalStorage);
+    const mapReturn = result.map((music) => {
+      if (returnLocalStorage.some((song) => song.trackId === music.trackId)) {
+        return { ...music, checkbox: true };
+      }
+      return music;
+    });
+    this.setState({ resuultAPI: mapReturn });
+    console.log(mapReturn);
   };
 
   handleChange = async (event) => {
     const { resuultAPI } = this.state;
     const evento = Number(event.target.id);
     const test = resuultAPI.find((music) => music.trackId === evento);
-    const filtrar = resuultAPI.map((el) => {
-      if (el.trackId === evento) {
-        return { ...el, checkbox: true };
+    const filtrar = resuultAPI.map((song) => {
+      if (song.trackId === evento) {
+        return { ...song, checkbox: true };
       }
-      return el;
+      return song;
     });
-    console.log(filtrar);
     this.setState({ isLoading: true, resuultAPI: filtrar });
     await addSong(test);
     this.setState({ isLoading: false });
