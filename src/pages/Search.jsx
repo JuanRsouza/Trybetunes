@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Carregando from './Carregando';
 import Header from '../components/Header';
 import searchAlbumsAPI from '../services/searchAlbumsAPI';
+import '../index.css';
 
 class Search extends Component {
   constructor() {
@@ -56,7 +57,7 @@ class Search extends Component {
     if (carregando) return <Carregando />;
 
     return (
-      <div data-testid="page-search">
+      <div data-testid="page-search" className="div-maior">
         <Header />
         { isLoading ? <Carregando /> : (
           <form onSubmit={ this.functionOnClick }>
@@ -90,10 +91,11 @@ class Search extends Component {
         {resultAPI.length === 0
           ? <h3>Nenhum álbum foi encontrado</h3>
           : (
-            <ul>
+            <ul className="unica-ul">
               { resultAPI.map((album) => (
                 <li key={ album.collectionId }>
                   <Link
+                    className="links-albuns"
                     to={ `/album/${album.collectionId}` }
                     data-testid={ `link-to-album-${album.collectionId}` }
                   >

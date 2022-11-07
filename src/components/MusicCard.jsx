@@ -1,27 +1,55 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import '../index.css';
+import Carregando from '../pages/Carregando';
 
 class MusicCard extends Component {
+  state = {
+    isLoading: false,
+  };
+
   render() {
-    const { resuultAPI } = this.props;
+    const { music, handleChange } = this.props;
+    const { isLoading } = this.state;
+
     return (
       <div>
-        <ul>
-          {resuultAPI.slice(1).map((el) => (
-            <li key={ el.trackId }>
-              {el.trackName}
-              <audio data-testid="audio-component" src="{previewUrl}" controls>
-                <track kind="captions" />
-                O seu navegador não suporta o elemento
-                {' '}
-                {' '}
-                <code>audio</code>
-                .
-              </audio>
-            </li>
+        {
+          isLoading
+            ? <Carregando />
+            : (
+              <section>
+                <ul>
+                  <li className="li-music">
+                    {music.trackName}
+                    <audio
+                      data-testid="audio-component"
+                      src={ music.previewUrl }
+                      controls
+                    >
+                      <track kind="captions" />
+                      O seu navegador não suporta o elemento
+                      {' '}
+                      {' '}
+                      <code>audio</code>
+                      .
+                    </audio>
+                    <label htmlFor={ music.trackId }>
+                      Favorita
+                      <input
+                        type="checkbox"
+                        onChange={ handleChange }
+                        checked={ music?.checkbox || false }
+                        id={ music.trackId }
+                        data-testid={ `checkbox-music-${music.trackId}` }
+                      />
+                    </label>
+                  </li>
+                </ul>
+              </section>
+            )
+        }
 
-          ))}
-        </ul>
       </div>
     );
   }

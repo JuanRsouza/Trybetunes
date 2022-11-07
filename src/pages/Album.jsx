@@ -4,6 +4,8 @@ import Header from '../components/Header';
 import getMusics from '../services/musicsAPI';
 import Carregando from './Carregando';
 import MusicCard from '../components/MusicCard';
+import '../index.css';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 
 class Album extends Component {
   constructor() {
@@ -22,9 +24,26 @@ class Album extends Component {
   fetchAPI = async () => {
     const { match: { params } } = this.props;
     const { id } = params;
-    const resultAPI = await getMusics(id);
-    console.log(resultAPI);
-    this.setState({ resuultAPI: resultAPI, isLoading: false });
+    const result = await getMusics(id);
+    this.setState({ resuultAPI: result, isLoading: false });
+    const returnLocalStorage = await getFavoriteSongs();
+    console.log(returnLocalStorage);
+  };
+
+  handleChange = async (event) => {
+    const { resuultAPI } = this.state;
+    const evento = Number(event.target.id);
+    const test = resuultAPI.find((music) => music.trackId === evento);
+    const filtrar = resuultAPI.map((el) => {
+      if (el.trackId === evento) {
+        return { ...el, checkbox: true };
+      }
+      return el;
+    });
+    console.log(filtrar);
+    this.setState({ isLoading: true, resuultAPI: filtrar });
+    await addSong(test);
+    this.setState({ isLoading: false });
   };
 
   render() {
@@ -43,7 +62,11 @@ class Album extends Component {
               </h3>
             </div>
           )}
-        <MusicCard resuultAPI={ resuultAPI } />
+        {resuultAPI.slice(1).map((music) => (<MusicCard
+          key={ music.trackId }
+          music={ music }
+          handleChange={ this.handleChange }
+        />))}
       </div>
     );
   }
