@@ -5,7 +5,7 @@ import getMusics from '../services/musicsAPI';
 import Carregando from './Carregando';
 import MusicCard from '../components/MusicCard';
 import '../index.css';
-import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 
 class Album extends Component {
   constructor() {
@@ -22,13 +22,9 @@ class Album extends Component {
   }
 
   fetchAPI = async () => {
-    // primeira parte
-
     const { match: { params: { id } } } = this.props;
     const result = await getMusics(id);
     this.setState({ resuultAPI: result, isLoading: false });
-
-    // segunda parte
     const returnLocalStorage = await getFavoriteSongs();
     const mapReturn = result.map((music) => {
       if (returnLocalStorage.some((song) => song.trackId === music.trackId)) {
@@ -37,22 +33,25 @@ class Album extends Component {
       return music;
     });
     this.setState({ resuultAPI: mapReturn });
-    console.log(mapReturn);
   };
 
   handleChange = async (event) => {
+    this.setState({ isLoading: true });
     const { resuultAPI } = this.state;
     const evento = Number(event.target.id);
     const test = resuultAPI.find((music) => music.trackId === evento);
-    const filtrar = resuultAPI.map((song) => {
+    const mapAPI = resuultAPI.map((song) => {
       if (song.trackId === evento) {
-        return { ...song, checkbox: true };
+        return { ...song, checkbox: !test.checkbox };
       }
       return song;
     });
-    this.setState({ isLoading: true, resuultAPI: filtrar });
-    await addSong(test);
-    this.setState({ isLoading: false });
+    if (test.checkbox) {
+      await removeSong(test);
+    } else {
+      await addSong(test);
+    }
+    this.setState({ isLoading: false, resuultAPI: mapAPI });
   };
 
   render() {
@@ -69,13 +68,13 @@ class Album extends Component {
               <h3 data-testid="album-name">
                 {resuultAPI[0].collectionName}
               </h3>
+              {resuultAPI.slice(1).map((music) => (<MusicCard
+                key={ music.trackId }
+                music={ music }
+                handleChange={ this.handleChange }
+              />))}
             </div>
           )}
-        {resuultAPI.slice(1).map((music) => (<MusicCard
-          key={ music.trackId }
-          music={ music }
-          handleChange={ this.handleChange }
-        />))}
       </div>
     );
   }
