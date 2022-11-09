@@ -35,23 +35,21 @@ class Album extends Component {
     this.setState({ resuultAPI: mapReturn });
   };
 
-  handleChange = async (event) => {
+  handleChange = (event) => {
     this.setState({ isLoading: true });
     const { resuultAPI } = this.state;
-    const evento = Number(event.target.id);
-    const test = resuultAPI.find((music) => music.trackId === evento);
+    const evento = (+event.target.id);
+    const foundMusic = resuultAPI.find((music) => music.trackId === evento);
     const mapAPI = resuultAPI.map((song) => {
       if (song.trackId === evento) {
-        return { ...song, checkbox: !test.checkbox };
+        return { ...song, checkbox: !foundMusic.checkbox };
       }
       return song;
     });
-    if (test.checkbox) {
-      await removeSong(test);
-    } else {
-      await addSong(test);
-    }
-    this.setState({ isLoading: false, resuultAPI: mapAPI });
+    (foundMusic.checkbox
+      ? removeSong(foundMusic)
+      : addSong(foundMusic))
+      .then(() => { this.setState({ isLoading: false, resuultAPI: mapAPI }); });
   };
 
   render() {
