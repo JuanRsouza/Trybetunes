@@ -14,7 +14,6 @@ class Profile extends Component {
 
   functionGetUser = async () => {
     const response = await getUser();
-    console.log(response);
     this.setState({ resultAPI: response });
   };
 
